@@ -53,7 +53,12 @@ export default function Header() {
             href={`/${locale}`}
             className="font-display text-xl font-bold tracking-tight"
           >
-            <Image src="/ohentlogo.png" alt="logo" width="140" height="100" />
+            <Image
+              src="/ohentlogo.png"
+              alt="ohentpaycash logo"
+              width="140"
+              height="100"
+            />
           </Link>
 
           <nav
