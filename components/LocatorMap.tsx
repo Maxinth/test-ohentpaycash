@@ -107,7 +107,7 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
             </label>
             <button
               onClick={locate}
-              className="rounded-full border border-ink px-4 py-1.5 text-sm font-medium hover:bg-sky"
+              className="rounded-full  border border-ink px-4 py-1.5 text-sm font-medium hover:bg-sky"
             >
               Use my location
             </button>
