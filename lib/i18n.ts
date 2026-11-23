@@ -13,7 +13,6 @@ export const locales = [
     language: "English",
     flag: "🇨🇦 ",
   },
-  // Add { code: "fr-ca", country: "ca", name: "Canada", language: "Français" } once French copy exists.
 ] as const;
 
 export type Locale = (typeof locales)[number];
