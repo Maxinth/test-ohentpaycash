@@ -16,16 +16,22 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$agents$2e$ts__$5b$app
 ;
 ;
 ;
-const IBADAN = {
-    lat: 7.3775,
-    lng: 3.947
+const CENTERS = {
+    us: {
+        lat: 40.73,
+        lng: -73.99
+    },
+    ca: {
+        lat: 43.65,
+        lng: -79.38
+    }
 };
 function km(a, b) {
     const r = (d)=>d * Math.PI / 180;
     const h = Math.sin(r(b.lat - a.lat) / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(r(b.lng - a.lng) / 2) ** 2;
     return 6371 * 2 * Math.asin(Math.sqrt(h));
 }
-function LocatorMap() {
+function LocatorMap({ country }) {
     const [query, setQuery] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
     const [openOnly, setOpenOnly] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const [selected, setSelected] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
@@ -37,7 +43,7 @@ function LocatorMap() {
     const isOpen = (a)=>hour !== null && hour >= a.opens && hour < a.closes;
     const list = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMemo"])(()=>{
         const q = query.trim().toLowerCase();
-        return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$agents$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["agents"].filter((a)=>!q || `${a.name} ${a.address}`.toLowerCase().includes(q)).filter((a)=>!openOnly || hour !== null && hour >= a.opens && hour < a.closes).map((a)=>({
+        return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$agents$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["agents"].filter((a)=>a.country === country).filter((a)=>!q || `${a.name} ${a.address}`.toLowerCase().includes(q)).filter((a)=>!openOnly || hour !== null && hour >= a.opens && hour < a.closes).map((a)=>({
                 a,
                 d: me ? km(me, a) : null
             })).sort((x, y)=>(x.d ?? 0) - (y.d ?? 0));
@@ -45,7 +51,8 @@ function LocatorMap() {
         query,
         openOnly,
         me,
-        hour
+        hour,
+        country
     ]);
     function locate() {
         setGeoError(false);
@@ -55,7 +62,7 @@ function LocatorMap() {
             }), ()=>setGeoError(true));
     }
     const active = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$agents$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["agents"].find((a)=>a.id === selected);
-    const center = active ?? me ?? IBADAN;
+    const center = active ?? me ?? CENTERS[country];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "mt-8 grid gap-6 lg:grid-cols-[22rem_1fr]",
         children: [
@@ -71,17 +78,17 @@ function LocatorMap() {
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                         value: query,
                                         onChange: (e)=>setQuery(e.target.value),
-                                        placeholder: "e.g. Bodija",
+                                        placeholder: country === "ca" ? "e.g. Toronto" : "e.g. Brooklyn",
                                         className: "mt-1 w-full border border-line bg-white px-3 py-2.5"
                                     }, void 0, false, {
                                         fileName: "[project]/components/LocatorMap.tsx",
-                                        lineNumber: 53,
+                                        lineNumber: 54,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/LocatorMap.tsx",
-                                lineNumber: 52,
+                                lineNumber: 53,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -96,14 +103,14 @@ function LocatorMap() {
                                                 onChange: (e)=>setOpenOnly(e.target.checked)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/LocatorMap.tsx",
-                                                lineNumber: 58,
+                                                lineNumber: 59,
                                                 columnNumber: 15
                                             }, this),
                                             " Open now"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/LocatorMap.tsx",
-                                        lineNumber: 57,
+                                        lineNumber: 58,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -112,13 +119,13 @@ function LocatorMap() {
                                         children: "Use my location"
                                     }, void 0, false, {
                                         fileName: "[project]/components/LocatorMap.tsx",
-                                        lineNumber: 60,
+                                        lineNumber: 61,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/LocatorMap.tsx",
-                                lineNumber: 56,
+                                lineNumber: 57,
                                 columnNumber: 11
                             }, this),
                             geoError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -127,13 +134,13 @@ function LocatorMap() {
                                 children: "We could not get your location. Allow access in your browser, or search by area."
                             }, void 0, false, {
                                 fileName: "[project]/components/LocatorMap.tsx",
-                                lineNumber: 64,
+                                lineNumber: 65,
                                 columnNumber: 24
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/LocatorMap.tsx",
-                        lineNumber: 51,
+                        lineNumber: 52,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -144,7 +151,7 @@ function LocatorMap() {
                                 children: "No payment points match. Try a different area or clear the filters."
                             }, void 0, false, {
                                 fileName: "[project]/components/LocatorMap.tsx",
-                                lineNumber: 68,
+                                lineNumber: 69,
                                 columnNumber: 33
                             }, this),
                             list.map(({ a, d })=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -159,7 +166,7 @@ function LocatorMap() {
                                                     children: a.name
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/LocatorMap.tsx",
-                                                    lineNumber: 73,
+                                                    lineNumber: 74,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -167,7 +174,7 @@ function LocatorMap() {
                                                     children: a.address
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/LocatorMap.tsx",
-                                                    lineNumber: 74,
+                                                    lineNumber: 75,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -178,7 +185,7 @@ function LocatorMap() {
                                                             children: hour === null ? "" : isOpen(a) ? "Open" : "Closed"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/LocatorMap.tsx",
-                                                            lineNumber: 76,
+                                                            lineNumber: 77,
                                                             columnNumber: 19
                                                         }, this),
                                                         " ",
@@ -190,13 +197,13 @@ function LocatorMap() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/LocatorMap.tsx",
-                                                    lineNumber: 75,
+                                                    lineNumber: 76,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/LocatorMap.tsx",
-                                            lineNumber: 71,
+                                            lineNumber: 72,
                                             columnNumber: 15
                                         }, this),
                                         selected === a.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -207,25 +214,25 @@ function LocatorMap() {
                                             children: "Get directions"
                                         }, void 0, false, {
                                             fileName: "[project]/components/LocatorMap.tsx",
-                                            lineNumber: 83,
+                                            lineNumber: 84,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, a.id, true, {
                                     fileName: "[project]/components/LocatorMap.tsx",
-                                    lineNumber: 70,
+                                    lineNumber: 71,
                                     columnNumber: 13
                                 }, this))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/LocatorMap.tsx",
-                        lineNumber: 67,
+                        lineNumber: 68,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/LocatorMap.tsx",
-                lineNumber: 50,
+                lineNumber: 51,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -250,12 +257,12 @@ function LocatorMap() {
                                         glyphColor: "#fff"
                                     }, void 0, false, {
                                         fileName: "[project]/components/LocatorMap.tsx",
-                                        lineNumber: 98,
+                                        lineNumber: 99,
                                         columnNumber: 19
                                     }, this)
                                 }, a.id, false, {
                                     fileName: "[project]/components/LocatorMap.tsx",
-                                    lineNumber: 97,
+                                    lineNumber: 98,
                                     columnNumber: 17
                                 }, this)),
                             me && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$vis$2e$gl$2f$react$2d$google$2d$maps$2f$dist$2f$index$2e$modern$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__["AdvancedMarker"], {
@@ -266,41 +273,41 @@ function LocatorMap() {
                                     glyphColor: "#fff"
                                 }, void 0, false, {
                                     fileName: "[project]/components/LocatorMap.tsx",
-                                    lineNumber: 101,
+                                    lineNumber: 102,
                                     columnNumber: 73
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/LocatorMap.tsx",
-                                lineNumber: 101,
+                                lineNumber: 102,
                                 columnNumber: 22
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/LocatorMap.tsx",
-                        lineNumber: 94,
+                        lineNumber: 95,
                         columnNumber: 13
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/LocatorMap.tsx",
-                    lineNumber: 93,
+                    lineNumber: 94,
                     columnNumber: 11
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "flex h-full items-center p-8 text-sm",
                     children: "Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to .env.local to show the map. The list still works without it."
                 }, void 0, false, {
                     fileName: "[project]/components/LocatorMap.tsx",
-                    lineNumber: 105,
+                    lineNumber: 106,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/LocatorMap.tsx",
-                lineNumber: 91,
+                lineNumber: 92,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/LocatorMap.tsx",
-        lineNumber: 49,
+        lineNumber: 50,
         columnNumber: 5
     }, this);
 }
@@ -314,56 +321,62 @@ __turbopack_context__.s([
 ]);
 const agents = [
     {
-        id: "1",
-        name: "Bodija Market Cash Desk",
-        address: "Bodija Market, Ibadan",
-        lat: 7.43,
-        lng: 3.9071,
-        opens: 8,
-        closes: 19
+        id: "us1",
+        country: "us",
+        name: "Brooklyn Corner Market",
+        address: "Brooklyn, NY",
+        lat: 40.6782,
+        lng: -73.9442,
+        opens: 7,
+        closes: 22
     },
     {
-        id: "2",
-        name: "Dugbe Mini Mart",
-        address: "Dugbe, Ibadan",
-        lat: 7.3869,
-        lng: 3.8919,
-        opens: 7,
+        id: "us2",
+        country: "us",
+        name: "Midtown Pharmacy",
+        address: "Midtown, New York, NY",
+        lat: 40.7549,
+        lng: -73.984,
+        opens: 8,
         closes: 21
     },
     {
-        id: "3",
-        name: "Ring Road Pharmacy",
-        address: "Ring Road, Ibadan",
-        lat: 7.3775,
-        lng: 3.9047,
+        id: "us3",
+        country: "us",
+        name: "Queens Convenience",
+        address: "Queens, NY",
+        lat: 40.7282,
+        lng: -73.7949,
+        opens: 6,
+        closes: 23
+    },
+    {
+        id: "ca1",
+        country: "ca",
+        name: "Downtown Variety",
+        address: "Downtown Toronto, ON",
+        lat: 43.6532,
+        lng: -79.3832,
         opens: 8,
         closes: 22
     },
     {
-        id: "4",
-        name: "Challenge Pay Point",
-        address: "Challenge, Ibadan",
-        lat: 7.3586,
-        lng: 3.8741,
+        id: "ca2",
+        country: "ca",
+        name: "Scarborough Pharmacy",
+        address: "Scarborough, ON",
+        lat: 43.7731,
+        lng: -79.2578,
         opens: 9,
-        closes: 18
+        closes: 21
     },
     {
-        id: "5",
-        name: "Mokola Super Store",
-        address: "Mokola, Ibadan",
-        lat: 7.401,
-        lng: 3.889,
-        opens: 8,
-        closes: 20
-    },
-    {
-        id: "6",
-        name: "UI Gate Provisions",
-        address: "University of Ibadan Gate",
-        lat: 7.4443,
-        lng: 3.9,
+        id: "ca3",
+        country: "ca",
+        name: "Mississauga Mart",
+        address: "Mississauga, ON",
+        lat: 43.589,
+        lng: -79.6441,
         opens: 7,
         closes: 23
     }
