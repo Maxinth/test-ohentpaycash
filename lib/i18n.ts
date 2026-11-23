@@ -1,6 +1,18 @@
 export const locales = [
-  { code: "en-us", country: "us", name: "United States", language: "English" },
-  { code: "en-ca", country: "ca", name: "Canada", language: "English" },
+  {
+    code: "en-us",
+    country: "us",
+    name: "United States",
+    language: "English",
+    flag: "🇺🇸 ",
+  },
+  {
+    code: "en-ca",
+    country: "ca",
+    name: "Canada",
+    language: "English",
+    flag: "🇨🇦 ",
+  },
   // Add { code: "fr-ca", country: "ca", name: "Canada", language: "Français" } once French copy exists.
 ] as const;
 

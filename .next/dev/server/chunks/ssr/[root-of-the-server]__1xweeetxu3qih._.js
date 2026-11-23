@@ -315,13 +315,15 @@ const locales = [
         code: "en-us",
         country: "us",
         name: "United States",
-        language: "English"
+        language: "English",
+        flag: "🇺🇸 "
     },
     {
         code: "en-ca",
         country: "ca",
         name: "Canada",
-        language: "English"
+        language: "English",
+        flag: "🇨🇦 "
     }
 ];
 const defaultLocale = "en-us";
