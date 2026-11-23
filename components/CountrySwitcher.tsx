@@ -1,8 +1,11 @@
 "use client";
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { locales } from "@/lib/i18n";
+import Cookies from "js-cookie";
 
+import { locales } from "@/lib/i18n";
 export default function CountrySwitcher() {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -29,13 +32,18 @@ export default function CountrySwitcher() {
   }, []);
 
   function choose(code: string) {
-    document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000; samesite=lax`;
+    Cookies.set("NEXT_LOCALE", code, {
+      expires: 365,
+      path: "/",
+      sameSite: "lax",
+    });
+
     setOpen(false);
     router.push(pathname.replace(`/${locale}`, `/${code}`));
   }
 
   return (
-    <div ref={box} className="relative">
+    <div ref={box} className="relative py-1">
       <button
         onClick={() => setOpen(!open)}
         aria-haspopup="listbox"
