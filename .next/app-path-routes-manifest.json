@@ -1,7 +1,0 @@
-{
-  "/[locale]/agents/page": "/[locale]/agents",
-  "/[locale]/locator/page": "/[locale]/locator",
-  "/[locale]/page": "/[locale]",
-  "/_global-error/page": "/_global-error",
-  "/_not-found/page": "/_not-found"
-}
