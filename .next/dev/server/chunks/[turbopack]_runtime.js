@@ -1,6 +1,19 @@
-var RUNTIME_PUBLIC_PATH = "chunks/[turbopack]_runtime.js";
+var RUNTIME_PUBLIC_PATH = "server/chunks/[turbopack]_runtime.js";
 var RELATIVE_ROOT_PATH = "../..";
 var ASSET_PREFIX = "/";
+// Apply forwarded globals from workerData if running in a worker thread
+if (typeof require !== 'undefined') {
+    try {
+        var { workerData } = require('worker_threads');
+        if (workerData?.__turbopack_globals__) {
+            Object.assign(globalThis, workerData.__turbopack_globals__);
+            // Remove internal data so it's not visible to user code
+            delete workerData.__turbopack_globals__;
+        }
+    } catch (_) {
+        // Not in a worker thread context, ignore
+    }
+}
 /**
  * This file contains runtime types and functions that are shared between all
  * TurboPack ECMAScript runtimes.
