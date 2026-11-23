@@ -54,7 +54,7 @@ function CountrySwitcher() {
                 onClick: ()=>setOpen(!open),
                 "aria-haspopup": "listbox",
                 "aria-expanded": open,
-                className: "flex items-center gap-2 rounded-full border border-line bg-white px-3.5 py-1.5 text-sm font-medium transition-colors hover:border-ink",
+                className: "flex items-center cursor-pointer gap-2 rounded-full border border-line bg-white px-3.5 py-1.5 text-sm font-medium transition-colors hover:border-ink",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                         width: "16",
@@ -71,25 +71,34 @@ function CountrySwitcher() {
                                 r: "9"
                             }, void 0, false, {
                                 fileName: "[project]/components/CountrySwitcher.tsx",
-                                lineNumber: 33,
-                                columnNumber: 129
+                                lineNumber: 54,
+                                columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                 d: "M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"
                             }, void 0, false, {
                                 fileName: "[project]/components/CountrySwitcher.tsx",
-                                lineNumber: 33,
-                                columnNumber: 161
+                                lineNumber: 55,
+                                columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/CountrySwitcher.tsx",
-                        lineNumber: 33,
+                        lineNumber: 45,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                        className: "mr-1 scale-125",
+                        children: [
+                            current.flag,
+                            " "
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/CountrySwitcher.tsx",
+                        lineNumber: 57,
                         columnNumber: 9
                     }, this),
                     current.name,
-                    " · ",
-                    current.language,
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                         width: "12",
                         height: "12",
@@ -102,18 +111,18 @@ function CountrySwitcher() {
                             d: "M6 9l6 6 6-6"
                         }, void 0, false, {
                             fileName: "[project]/components/CountrySwitcher.tsx",
-                            lineNumber: 35,
-                            columnNumber: 172
+                            lineNumber: 68,
+                            columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/CountrySwitcher.tsx",
-                        lineNumber: 35,
+                        lineNumber: 59,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/CountrySwitcher.tsx",
-                lineNumber: 31,
+                lineNumber: 39,
                 columnNumber: 7
             }, this),
             open && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -127,27 +136,36 @@ function CountrySwitcher() {
                                 "aria-selected": l.code === locale,
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     onClick: ()=>choose(l.code),
-                                    className: `flex w-full items-center justify-between px-3 py-2.5 text-left text-sm hover:bg-sky ${l.code === locale ? "font-semibold" : ""}`,
+                                    className: `flex w-full cursor-pointer items-center justify-between px-3 py-2.5 text-left text-sm hover:bg-sky ${l.code === locale ? "font-semibold" : ""}`,
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: [
-                                                l.name,
-                                                " ",
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "text-ink/60",
+                                                    className: "mr-1 scale-200",
                                                     children: [
-                                                        "· ",
-                                                        l.language
+                                                        l.flag,
+                                                        " "
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/CountrySwitcher.tsx",
-                                                    lineNumber: 44,
-                                                    columnNumber: 34
+                                                    lineNumber: 81,
+                                                    columnNumber: 21
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "text-ink/60",
+                                                    children: [
+                                                        " ",
+                                                        l.name
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/CountrySwitcher.tsx",
+                                                    lineNumber: 82,
+                                                    columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/CountrySwitcher.tsx",
-                                            lineNumber: 44,
+                                            lineNumber: 80,
                                             columnNumber: 19
                                         }, this),
                                         l.code === locale && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -155,23 +173,23 @@ function CountrySwitcher() {
                                             children: "✓"
                                         }, void 0, false, {
                                             fileName: "[project]/components/CountrySwitcher.tsx",
-                                            lineNumber: 45,
+                                            lineNumber: 84,
                                             columnNumber: 41
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/CountrySwitcher.tsx",
-                                    lineNumber: 42,
+                                    lineNumber: 76,
                                     columnNumber: 17
                                 }, this)
                             }, l.code, false, {
                                 fileName: "[project]/components/CountrySwitcher.tsx",
-                                lineNumber: 41,
+                                lineNumber: 75,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/CountrySwitcher.tsx",
-                        lineNumber: 39,
+                        lineNumber: 73,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -179,19 +197,19 @@ function CountrySwitcher() {
                         children: "Currently available in the United States and Canada."
                     }, void 0, false, {
                         fileName: "[project]/components/CountrySwitcher.tsx",
-                        lineNumber: 50,
+                        lineNumber: 89,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/CountrySwitcher.tsx",
-                lineNumber: 38,
+                lineNumber: 72,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/CountrySwitcher.tsx",
-        lineNumber: 30,
+        lineNumber: 38,
         columnNumber: 5
     }, this);
 }
