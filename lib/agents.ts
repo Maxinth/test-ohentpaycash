@@ -1,67 +1,14 @@
 export type Agent = {
-  id: string;
-  name: string;
-  address: string;
-  lat: number;
-  lng: number;
-  opens: number;
-  closes: number;
+  id: string; country: "us" | "ca"; name: string; address: string;
+  lat: number; lng: number; opens: number; closes: number;
 };
 
 // Sample data. Replace with your database or API.
 export const agents: Agent[] = [
-  {
-    id: "1",
-    name: "Bodija Market Cash Desk",
-    address: "Bodija Market, Ibadan",
-    lat: 7.43,
-    lng: 3.9071,
-    opens: 8,
-    closes: 19,
-  },
-  {
-    id: "2",
-    name: "Dugbe Mini Mart",
-    address: "Dugbe, Ibadan",
-    lat: 7.3869,
-    lng: 3.8919,
-    opens: 7,
-    closes: 21,
-  },
-  {
-    id: "3",
-    name: "Ring Road Pharmacy",
-    address: "Ring Road, Ibadan",
-    lat: 7.3775,
-    lng: 3.9047,
-    opens: 8,
-    closes: 22,
-  },
-  {
-    id: "4",
-    name: "Challenge Pay Point",
-    address: "Challenge, Ibadan",
-    lat: 7.3586,
-    lng: 3.8741,
-    opens: 9,
-    closes: 18,
-  },
-  {
-    id: "5",
-    name: "Mokola Super Store",
-    address: "Mokola, Ibadan",
-    lat: 7.401,
-    lng: 3.889,
-    opens: 8,
-    closes: 20,
-  },
-  {
-    id: "6",
-    name: "UI Gate Provisions",
-    address: "University of Ibadan Gate",
-    lat: 7.4443,
-    lng: 3.9,
-    opens: 7,
-    closes: 23,
-  },
+  { id: "us1", country: "us", name: "Brooklyn Corner Market", address: "Brooklyn, NY", lat: 40.6782, lng: -73.9442, opens: 7, closes: 22 },
+  { id: "us2", country: "us", name: "Midtown Pharmacy", address: "Midtown, New York, NY", lat: 40.7549, lng: -73.984, opens: 8, closes: 21 },
+  { id: "us3", country: "us", name: "Queens Convenience", address: "Queens, NY", lat: 40.7282, lng: -73.7949, opens: 6, closes: 23 },
+  { id: "ca1", country: "ca", name: "Downtown Variety", address: "Downtown Toronto, ON", lat: 43.6532, lng: -79.3832, opens: 8, closes: 22 },
+  { id: "ca2", country: "ca", name: "Scarborough Pharmacy", address: "Scarborough, ON", lat: 43.7731, lng: -79.2578, opens: 9, closes: 21 },
+  { id: "ca3", country: "ca", name: "Mississauga Mart", address: "Mississauga, ON", lat: 43.589, lng: -79.6441, opens: 7, closes: 23 },
 ];

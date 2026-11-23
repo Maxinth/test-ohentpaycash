@@ -4,7 +4,7 @@ import { APIProvider, AdvancedMarker, Map, Pin } from "@vis.gl/react-google-maps
 import { agents, type Agent } from "@/lib/agents";
 
 type LatLng = { lat: number; lng: number };
-const IBADAN: LatLng = { lat: 7.3775, lng: 3.947 };
+const CENTERS: Record<"us" | "ca", LatLng> = { us: { lat: 40.73, lng: -73.99 }, ca: { lat: 43.65, lng: -79.38 } };
 
 function km(a: LatLng, b: LatLng) {
   const r = (d: number) => (d * Math.PI) / 180;
@@ -13,7 +13,7 @@ function km(a: LatLng, b: LatLng) {
   return 6371 * 2 * Math.asin(Math.sqrt(h));
 }
 
-export default function LocatorMap() {
+export default function LocatorMap({ country }: { country: "us" | "ca" }) {
   const [query, setQuery] = useState("");
   const [openOnly, setOpenOnly] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
@@ -28,11 +28,12 @@ export default function LocatorMap() {
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
     return agents
+      .filter((a) => a.country === country)
       .filter((a) => !q || `${a.name} ${a.address}`.toLowerCase().includes(q))
       .filter((a) => !openOnly || (hour !== null && hour >= a.opens && hour < a.closes))
       .map((a) => ({ a, d: me ? km(me, a) : null }))
       .sort((x, y) => (x.d ?? 0) - (y.d ?? 0));
-  }, [query, openOnly, me, hour]);
+  }, [query, openOnly, me, hour, country]);
 
   function locate() {
     setGeoError(false);
@@ -43,14 +44,14 @@ export default function LocatorMap() {
   }
 
   const active = agents.find((a) => a.id === selected);
-  const center = active ?? me ?? IBADAN;
+  const center = active ?? me ?? CENTERS[country];
 
   return (
     <div className="mt-8 grid gap-6 lg:grid-cols-[22rem_1fr]">
       <div>
         <div className="space-y-3">
           <label className="block text-sm font-medium">Area or shop name
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="e.g. Bodija"
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={country === "ca" ? "e.g. Toronto" : "e.g. Brooklyn"}
               className="mt-1 w-full border border-line bg-white px-3 py-2.5" />
           </label>
           <div className="flex items-center justify-between gap-3">

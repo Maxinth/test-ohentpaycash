@@ -1,20 +1,25 @@
 "use client";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import CountrySwitcher from "./CountrySwitcher";
+import { locales } from "@/lib/i18n";
 
 const links = [
-  { href: "/#how", label: "How it works" },
-  { href: "/locator", label: "Payment points" },
-  { href: "/#faq", label: "FAQ" },
-  { href: "/agents", label: "Become an agent" },
+  { path: "/#how", label: "How it works" },
+  { path: "/locator", label: "Payment points" },
+  { path: "/#faq", label: "FAQ" },
+  { path: "/agents", label: "Become an agent" },
 ];
 
 const underline =
   "relative after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5 after:origin-left after:scale-x-0 after:bg-brand after:transition-transform after:duration-300 hover:after:scale-x-100 focus-visible:after:scale-x-100";
 
 export default function Header() {
+  const { locale } = useParams<{ locale: string }>();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const to = (p: string) => (p.startsWith("/#") ? `/${locale}${p.slice(1)}` : `/${locale}${p}`);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -27,24 +32,22 @@ export default function Header() {
     <header className="sticky top-0 z-40">
       <div className={`overflow-hidden bg-ink text-xs text-sky transition-all duration-300 ${scrolled ? "max-h-0" : "max-h-10"}`}>
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
-          <Link href="/agents" className="hover:underline">Run a shop? Become an agent</Link>
-          <span>Nigeria · English</span>
+          <Link href={to("/agents")} className="hover:underline">Run a shop? Become an agent</Link>
+          <span>Available in the US and Canada</span>
         </div>
       </div>
 
       <div className={`border-b border-line transition-all duration-300 ${scrolled ? "bg-white/90 shadow-[0_6px_20px_-12px_rgba(10,37,64,.5)] backdrop-blur" : "bg-paper"}`}>
         <div className={`mx-auto flex max-w-6xl items-center justify-between px-5 transition-all duration-300 ${scrolled ? "py-2.5" : "py-4"}`}>
-          <Link href="/" className="font-display text-xl font-bold tracking-tight">
+          <Link href={`/${locale}`} className="font-display text-xl font-bold tracking-tight">
             Ohent<span className="text-royal">PayCash</span>
           </Link>
 
           <nav aria-label="Main" className="hidden items-center gap-8 text-sm font-medium md:flex">
             {links.map((l) => (
-              <Link key={l.href} href={l.href} className={underline}>{l.label}</Link>
+              <Link key={l.path} href={to(l.path)} className={underline}>{l.label}</Link>
             ))}
-            <Link href="/locator" aria-label="Search payment points" className="rounded-full p-2 transition-colors hover:bg-sky">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
-            </Link>
+            <CountrySwitcher />
           </nav>
 
           <button className="rounded-full p-2 hover:bg-sky md:hidden" aria-expanded={open} aria-controls="mobile-nav"
@@ -57,13 +60,24 @@ export default function Header() {
 
         <nav id="mobile-nav" aria-label="Mobile"
           className={`grid overflow-hidden transition-[grid-template-rows] duration-300 md:hidden ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
-          <ul className="min-h-0 divide-y divide-line px-5">
-            {links.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} onClick={() => setOpen(false)} className="block py-3.5 font-medium">{l.label}</Link>
-              </li>
-            ))}
-          </ul>
+          <div className="min-h-0 px-5">
+            <ul className="divide-y divide-line">
+              {links.map((l) => (
+                <li key={l.path}><Link href={to(l.path)} onClick={() => setOpen(false)} className="block py-3.5 font-medium">{l.label}</Link></li>
+              ))}
+            </ul>
+            <p className="mt-3 border-t border-line pt-3 text-xs text-ink/60">Country and language</p>
+            <ul className="pb-3">
+              {locales.map((l) => (
+                <li key={l.code}>
+                  <a href={`/${l.code}`} onClick={() => { document.cookie = `NEXT_LOCALE=${l.code}; path=/; max-age=31536000`; }}
+                    className={`block py-2 text-sm ${l.code === locale ? "font-semibold" : ""}`}>
+                    {l.name} · {l.language}{l.code === locale ? " ✓" : ""}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </nav>
       </div>
     </header>
