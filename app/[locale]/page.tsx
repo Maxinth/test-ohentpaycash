@@ -2,6 +2,7 @@ import Link from "next/link";
 import Slip from "@/components/Slip";
 import MiniMap from "@/components/MiniMap";
 import HowItWorks from "@/components/HowItWorks";
+import IndustriesWeServe from "@/components/IndustriesWeServe";
 
 const reasons = [
   {
@@ -144,6 +145,10 @@ export default async function Home({
           label="Partner logo"
         />
         <Logos title="Pay at these payment points" label="Retailer logo" />
+      </section>
+
+      <section className="py-16">
+        <IndustriesWeServe />
       </section>
 
       <section className="mx-auto mt-20 grid max-w-6xl items-center gap-8 px-5 md:grid-cols-2">
