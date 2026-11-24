@@ -39,7 +39,7 @@ function PanTo({ target, zoom }: { target: LatLng; zoom?: number }) {
     if (!map) return;
     map.panTo(target);
     if (zoom) map.setZoom(zoom);
-  }, [map, target.lat, target.lng, zoom]);
+  }, [map, target, zoom]);
   return null;
 }
 
@@ -49,6 +49,8 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [me, setMe] = useState<LatLng | null>(null);
   const [geoError, setGeoError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const hour = useSyncExternalStore<number | null>(
     subscribeToClock,
     getHour,
@@ -72,6 +74,28 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
       .sort((x, y) => (x.d ?? 0) - (y.d ?? 0));
   }, [query, openOnly, me, hour, country]);
 
+  const normalizedQuery = query.trim().toLowerCase();
+  const suggestions = normalizedQuery
+    ? agents
+        .filter((a) => a.country === country)
+        .filter((a) =>
+          `${a.name} ${a.address}`.toLowerCase().includes(normalizedQuery),
+        )
+        .slice(0, 5)
+    : [];
+
+  function chooseSuggestion(agent: Agent) {
+    setIsLoading(true);
+    setQuery(agent.address);
+    setSelected(agent.id);
+    setSuggestionsOpen(false);
+  }
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setIsLoading(false), 350);
+    return () => window.clearTimeout(timer);
+  }, [country, query, openOnly]);
+
   function locate() {
     setGeoError(false);
     navigator.geolocation?.getCurrentPosition(
@@ -87,21 +111,66 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
     <div className="mt-8 grid gap-6 lg:grid-cols-[22rem_1fr]">
       <div>
         <div className="space-y-3">
-          <label className="block text-sm font-medium">
+          <label className="relative block text-sm font-medium">
             Area or shop name
             <input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(event) => {
+                setIsLoading(true);
+                setQuery(event.target.value);
+                setSelected(null);
+                setSuggestionsOpen(true);
+              }}
+              onFocus={() => setSuggestionsOpen(true)}
+              onBlur={() =>
+                window.setTimeout(() => setSuggestionsOpen(false), 150)
+              }
+              role="combobox"
+              aria-expanded={suggestionsOpen && suggestions.length > 0}
+              aria-controls="payment-point-suggestions"
+              aria-autocomplete="list"
               placeholder={country === "ca" ? "e.g. Toronto" : "e.g. Brooklyn"}
               className="mt-1 w-full border border-line bg-white px-3 py-2.5"
             />
+            {suggestionsOpen && suggestions.length > 0 && (
+              <ul
+                id="payment-point-suggestions"
+                role="listbox"
+                className="absolute inset-x-0 top-full z-30 mt-1 max-h-60 overflow-auto border border-line bg-white shadow-lg"
+              >
+                {suggestions.map((suggestion) => (
+                  <li
+                    key={suggestion.id}
+                    role="option"
+                    aria-selected={selected === suggestion.id}
+                  >
+                    <button
+                      type="button"
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => chooseSuggestion(suggestion)}
+                      className="w-full px-3 py-3 text-left hover:bg-sky"
+                    >
+                      <span className="block font-medium">
+                        {suggestion.name}
+                      </span>
+                      <span className="block text-xs text-ink/60">
+                        {suggestion.address}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </label>
           <div className="flex items-center justify-between gap-3">
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={openOnly}
-                onChange={(e) => setOpenOnly(e.target.checked)}
+                onChange={(e) => {
+                  setIsLoading(true);
+                  setOpenOnly(e.target.checked);
+                }}
               />{" "}
               Open now
             </label>
@@ -120,52 +189,68 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
           )}
         </div>
 
-        <ul className="mt-5 max-h-[28rem] divide-y divide-line overflow-auto border-y border-line">
-          {list.length === 0 && (
-            <li className="py-6 text-sm">
-              No payment points match. Try a different area or clear the
-              filters.
+        <ul
+          className="mt-5 max-h-112 divide-y divide-line overflow-auto border-y border-line"
+          aria-busy={isLoading}
+        >
+          {isLoading ? (
+            <li aria-label="Loading payment points" className="space-y-4 p-3">
+              {[0, 1, 2].map((item) => (
+                <div key={item} className="animate-pulse space-y-2">
+                  <div className="h-5 w-2/3 rounded bg-ink/10" />
+                  <div className="h-4 w-full rounded bg-ink/10" />
+                  <div className="h-4 w-1/2 rounded bg-ink/10" />
+                </div>
+              ))}
             </li>
+          ) : (
+            list.length === 0 && (
+              <li className="py-6 text-sm">
+                No payment points match. Try a different area or clear the
+                filters.
+              </li>
+            )
           )}
-          {list.map(({ a, d }) => (
-            <li key={a.id}>
-              <button
-                onClick={() => setSelected(a.id)}
-                aria-pressed={selected === a.id}
-                className={`w-full px-2 py-4 text-left hover:bg-sky/60 ${selected === a.id ? "bg-sky" : ""}`}
-              >
-                <span className="block font-display text-lg font-semibold">
-                  {a.name}
-                </span>
-                <span className="block text-sm text-ink/80">{a.address}</span>
-                <span className="mt-1 block text-sm">
-                  <span
-                    className={
-                      isOpen(a) ? "font-medium text-royal" : "text-ink/60"
-                    }
-                  >
-                    {hour === null ? "" : isOpen(a) ? "Open" : "Closed"}
-                  </span>{" "}
-                  {a.opens}:00 to {a.closes}:00
-                  {d !== null && ` · ${d.toFixed(1)} km away`}
-                </span>
-              </button>
-              {selected === a.id && (
-                <a
-                  className="mb-3 ml-2 inline-block text-sm underline underline-offset-4"
-                  target="_blank"
-                  rel="noreferrer"
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${a.lat},${a.lng}`}
+          {!isLoading &&
+            list.map(({ a, d }) => (
+              <li key={a.id}>
+                <button
+                  onClick={() => setSelected(a.id)}
+                  aria-pressed={selected === a.id}
+                  className={`w-full px-2 py-4 text-left hover:bg-sky/60 ${selected === a.id ? "bg-sky" : ""}`}
                 >
-                  Get directions
-                </a>
-              )}
-            </li>
-          ))}
+                  <span className="block font-display text-lg font-semibold">
+                    {a.name}
+                  </span>
+                  <span className="block text-sm text-ink/80">{a.address}</span>
+                  <span className="mt-1 block text-sm">
+                    <span
+                      className={
+                        isOpen(a) ? "font-medium text-royal" : "text-ink/60"
+                      }
+                    >
+                      {hour === null ? "" : isOpen(a) ? "Open" : "Closed"}
+                    </span>{" "}
+                    {a.opens}:00 to {a.closes}:00
+                    {d !== null && ` · ${d.toFixed(1)} km away`}
+                  </span>
+                </button>
+                {selected === a.id && (
+                  <a
+                    className="mb-3 ml-2 inline-block text-sm underline underline-offset-4"
+                    target="_blank"
+                    rel="noreferrer"
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${a.lat},${a.lng}`}
+                  >
+                    Get directions
+                  </a>
+                )}
+              </li>
+            ))}
         </ul>
       </div>
 
-      <div className="h-[28rem] bg-sky lg:h-[36rem]">
+      <div className="h-112 bg-sky lg:h-144">
         {apiKey ? (
           <APIProvider apiKey={apiKey}>
             <Map
