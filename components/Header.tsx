@@ -131,7 +131,7 @@ function HeaderContent() {
           scrolled ? "max-h-0" : "max-h-10"
         }`}
       >
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
+        <div className="mx-auto flex max-w-6xl items-center hidden justify-between px-5 py-2">
           <Link
             href="/contact-us?become-a-partner"
             className="hover:font-medium underline duration-200 ease-in-out"

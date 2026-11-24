@@ -8,6 +8,14 @@ import {
   useMap,
 } from "@vis.gl/react-google-maps";
 import { agents, type Agent } from "@/lib/agents";
+import { X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type LatLng = { lat: number; lng: number };
 const CENTERS: Record<"us" | "ca", LatLng> = {
@@ -111,59 +119,75 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
     <div className="mt-8 grid gap-6 lg:grid-cols-[22rem_1fr]">
       <div>
         <div className="space-y-3">
-          <label className="relative block text-sm font-medium">
-            Area or shop name
-            <input
-              value={query}
-              onChange={(event) => {
-                setIsLoading(true);
-                setQuery(event.target.value);
-                setSelected(null);
-                setSuggestionsOpen(true);
-              }}
-              onFocus={() => setSuggestionsOpen(true)}
-              onBlur={() =>
-                window.setTimeout(() => setSuggestionsOpen(false), 150)
-              }
-              role="combobox"
-              aria-expanded={suggestionsOpen && suggestions.length > 0}
-              aria-controls="payment-point-suggestions"
-              aria-autocomplete="list"
-              placeholder={country === "ca" ? "e.g. Toronto" : "e.g. Brooklyn"}
-              className="mt-1 w-full border border-line bg-white px-3 py-2.5"
-            />
-            {suggestionsOpen && suggestions.length > 0 && (
-              <ul
-                id="payment-point-suggestions"
-                role="listbox"
-                className="absolute inset-x-0 top-full z-30 mt-1 max-h-60 overflow-auto border border-line bg-white shadow-lg"
-              >
-                {suggestions.map((suggestion) => (
-                  <li
-                    key={suggestion.id}
-                    role="option"
-                    aria-selected={selected === suggestion.id}
-                  >
+          <div className="space-y-1">
+            <Label htmlFor="payment-point-search">Area or shop name</Label>
+            <Popover
+              open={suggestionsOpen && suggestions.length > 0}
+              onOpenChange={setSuggestionsOpen}
+            >
+              <PopoverTrigger asChild>
+                <div className="relative">
+                  <Input
+                    id="payment-point-search"
+                    value={query}
+                    onChange={(event) => {
+                      setIsLoading(true);
+                      setQuery(event.target.value);
+                      setSelected(null);
+                      setSuggestionsOpen(true);
+                    }}
+                    onFocus={() => setSuggestionsOpen(true)}
+                    role="combobox"
+                    aria-expanded={suggestionsOpen && suggestions.length > 0}
+                    aria-controls="payment-point-suggestions"
+                    aria-autocomplete="list"
+                    placeholder={
+                      country === "ca" ? "e.g. Toronto" : "e.g. Brooklyn"
+                    }
+                    className="pr-10"
+                  />
+                  {query && (
                     <button
                       type="button"
-                      onMouseDown={(event) => event.preventDefault()}
-                      onClick={() => chooseSuggestion(suggestion)}
-                      className="w-full px-3 py-3 text-left hover:bg-sky"
+                      aria-label="Clear search"
+                      onClick={() => {
+                        setIsLoading(true);
+                        setQuery("");
+                        setSelected(null);
+                        setSuggestionsOpen(false);
+                      }}
+                      className="absolute cursor-pointer inset-y-0 right-0 flex w-10 items-center justify-center text-ink/50 transition-colors hover:text-ink"
                     >
-                      <span className="block font-medium">
-                        {suggestion.name}
-                      </span>
-                      <span className="block text-xs text-ink/60">
-                        {suggestion.address}
-                      </span>
+                      <X className="h-4 w-4" aria-hidden="true" />
                     </button>
-                  </li>
+                  )}
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                id="payment-point-suggestions"
+                role="listbox"
+                className="p-1"
+              >
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion.id}
+                    type="button"
+                    role="option"
+                    aria-selected={selected === suggestion.id}
+                    onClick={() => chooseSuggestion(suggestion)}
+                    className="w-full rounded-sm px-3 py-3 text-left hover:bg-sky focus:bg-sky focus:outline-none"
+                  >
+                    <span className="block font-medium">{suggestion.name}</span>
+                    <span className="block text-xs text-ink/60">
+                      {suggestion.address}
+                    </span>
+                  </button>
                 ))}
-              </ul>
-            )}
-          </label>
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="flex items-center justify-between gap-3">
-            <label className="flex items-center gap-2 text-sm">
+            <label className="items-center gap-2 text-sm hidden">
               <input
                 type="checkbox"
                 checked={openOnly}
@@ -206,8 +230,8 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
           ) : (
             list.length === 0 && (
               <li className="py-6 text-sm">
-                No payment points match. Try a different area or clear the
-                filters.
+                No payment points match your entry. Try a different area or shop
+                name.
               </li>
             )
           )}
@@ -217,7 +241,9 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
                 <button
                   onClick={() => setSelected(a.id)}
                   aria-pressed={selected === a.id}
-                  className={`w-full px-2 py-4 text-left hover:bg-sky/60 ${selected === a.id ? "bg-sky" : ""}`}
+                  className={`w-full px-2 py-4 text-left hover:bg-sky/60 cursor-pointer ${
+                    selected === a.id ? "bg-sky" : ""
+                  }`}
                 >
                   <span className="block font-display text-lg font-semibold">
                     {a.name}

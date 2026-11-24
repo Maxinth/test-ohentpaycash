@@ -159,8 +159,7 @@ export default async function Home({
             Find a payment point
           </h2>
           <p className="mt-3 max-w-md text-ink/80">
-            Search by area or use your location to see the nearest agents and
-            their opening hours.
+            Search by area to see the nearest agents and their opening hours.
           </p>
           <Link
             href={href("/locator")}
