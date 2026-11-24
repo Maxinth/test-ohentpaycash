@@ -89,7 +89,7 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
         </AlertTitle>
         <AlertDescription className="mt-2 text-emerald-700">
           {variant === "agent"
-            ? "We will call you within two working days to arrange a shop visit."
+            ? "Your request to become a partner has been received. A member of our team will respond soon."
             : "Thank you. A member of our team will respond soon."}
         </AlertDescription>
       </Alert>
@@ -259,13 +259,13 @@ function SubmitButton({ status, label }: { status: Status; label: string }) {
       <Button
         type="submit"
         disabled={status === "sending"}
-        className="w-full py-6"
+        className="w-full py-6 cursor-pointer font-semibold"
       >
         {status === "sending" ? "Sending…" : label}
       </Button>
       {status === "error" && (
-        <p role="alert" className="text-sm text-red-700">
-          Your message did not send. Check your connection and try again.
+        <p role="alert" className="text-sm text-red-700 text-center">
+          Your request didn&apos;t go through. Please try again.
         </p>
       )}
     </>
