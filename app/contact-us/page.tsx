@@ -77,6 +77,7 @@ function ContactUsContent() {
       </div>
       <div className="md:sticky md:top-6 md:self-start">
         <AgentForm
+          variant={isBecomeAnAgent ? "agent" : "contact"}
           headingText={
             isBecomeAnAgent
               ? "Apply to become an agent"
