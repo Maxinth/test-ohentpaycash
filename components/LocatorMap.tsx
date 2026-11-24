@@ -1,5 +1,11 @@
 "use client";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import {
   APIProvider,
   AdvancedMarker,
@@ -11,11 +17,6 @@ import { agents, type Agent } from "@/lib/agents";
 import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 type LatLng = { lat: number; lng: number };
 const CENTERS: Record<"us" | "ca", LatLng> = {
@@ -59,6 +60,8 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
   const [geoError, setGeoError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const lastTypedAt = useRef(0);
   const hour = useSyncExternalStore<number | null>(
     subscribeToClock,
     getHour,
@@ -93,16 +96,39 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
     : [];
 
   function chooseSuggestion(agent: Agent) {
-    setIsLoading(true);
+    // A deliberate selection, so the focus safety net must not fight it.
+    lastTypedAt.current = 0;
     setQuery(agent.address);
     setSelected(agent.id);
     setSuggestionsOpen(false);
   }
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setIsLoading(false), 350);
-    return () => window.clearTimeout(timer);
+    const loadingTimer = window.setTimeout(() => setIsLoading(true), 200);
+    const finishedTimer = window.setTimeout(() => setIsLoading(false), 350);
+
+    return () => {
+      window.clearTimeout(loadingTimer);
+      window.clearTimeout(finishedTimer);
+    };
   }, [country, query, openOnly]);
+
+  // Safety net: if the map or its markers steal focus while the user is
+  // typing, put it back on the input. Re-checked after the next frame because
+  // the map can grab focus after React commits.
+  useEffect(() => {
+    const restoreFocus = () => {
+      const el = inputRef.current;
+      if (!el) return;
+      const recentlyTyped = Date.now() - lastTypedAt.current < 1000;
+      if (recentlyTyped && document.activeElement !== el) {
+        el.focus({ preventScroll: true });
+      }
+    };
+    restoreFocus();
+    const raf = window.requestAnimationFrame(restoreFocus);
+    return () => window.cancelAnimationFrame(raf);
+  }, [list, suggestionsOpen]);
 
   function locate() {
     setGeoError(false);
@@ -121,70 +147,73 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
         <div className="space-y-3">
           <div className="space-y-1">
             <Label htmlFor="payment-point-search">Area or shop name</Label>
-            <Popover
-              open={suggestionsOpen && suggestions.length > 0}
-              onOpenChange={setSuggestionsOpen}
-            >
-              <PopoverTrigger asChild>
-                <div className="relative">
-                  <Input
-                    id="payment-point-search"
-                    value={query}
-                    onChange={(event) => {
-                      setIsLoading(true);
-                      setQuery(event.target.value);
-                      setSelected(null);
-                      setSuggestionsOpen(true);
-                    }}
-                    onFocus={() => setSuggestionsOpen(true)}
-                    role="combobox"
-                    aria-expanded={suggestionsOpen && suggestions.length > 0}
-                    aria-controls="payment-point-suggestions"
-                    aria-autocomplete="list"
-                    placeholder={
-                      country === "ca" ? "e.g. Toronto" : "e.g. Brooklyn"
-                    }
-                    className="pr-10"
-                  />
-                  {query && (
-                    <button
-                      type="button"
-                      aria-label="Clear search"
-                      onClick={() => {
-                        setIsLoading(true);
-                        setQuery("");
-                        setSelected(null);
-                        setSuggestionsOpen(false);
-                      }}
-                      className="absolute cursor-pointer inset-y-0 right-0 flex w-10 items-center justify-center text-ink/50 transition-colors hover:text-ink"
+            <div className="relative">
+              <Input
+                ref={inputRef}
+                id="payment-point-search"
+                value={query}
+                onChange={(event) => {
+                  lastTypedAt.current = Date.now();
+                  setQuery(event.target.value);
+                  setSelected(null);
+                  setSuggestionsOpen(true);
+                }}
+                onFocus={() => setSuggestionsOpen(true)}
+                role="combobox"
+                aria-expanded={suggestionsOpen && suggestions.length > 0}
+                aria-controls="payment-point-suggestions"
+                aria-autocomplete="list"
+                placeholder={
+                  country === "ca" ? "e.g. Toronto" : "e.g. Brooklyn"
+                }
+                className="pr-10"
+              />
+              {query && (
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  onClick={() => {
+                    setQuery("");
+                    setSelected(null);
+                    setSuggestionsOpen(false);
+                  }}
+                  className="absolute cursor-pointer inset-y-0 right-0 flex w-10 items-center justify-center text-ink/50 transition-colors hover:text-ink"
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
+                </button>
+              )}
+              {suggestionsOpen && suggestions.length > 0 && (
+                <ul
+                  id="payment-point-suggestions"
+                  role="listbox"
+                  className="absolute inset-x-0 top-full z-30 mt-1 max-h-60 overflow-auto rounded-md border border-line bg-white shadow-lg"
+                >
+                  {suggestions.map((suggestion) => (
+                    <li
+                      key={suggestion.id}
+                      role="option"
+                      aria-selected={selected === suggestion.id}
                     >
-                      <X className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                  )}
-                </div>
-              </PopoverTrigger>
-              <PopoverContent
-                id="payment-point-suggestions"
-                role="listbox"
-                className="p-1"
-              >
-                {suggestions.map((suggestion) => (
-                  <button
-                    key={suggestion.id}
-                    type="button"
-                    role="option"
-                    aria-selected={selected === suggestion.id}
-                    onClick={() => chooseSuggestion(suggestion)}
-                    className="w-full rounded-sm px-3 py-3 text-left hover:bg-sky focus:bg-sky focus:outline-none"
-                  >
-                    <span className="block font-medium">{suggestion.name}</span>
-                    <span className="block text-xs text-ink/60">
-                      {suggestion.address}
-                    </span>
-                  </button>
-                ))}
-              </PopoverContent>
-            </Popover>
+                      <button
+                        type="button"
+                        tabIndex={-1}
+                        onMouseDown={(event) => event.preventDefault()}
+                        onPointerDown={(event) => event.preventDefault()}
+                        onClick={() => chooseSuggestion(suggestion)}
+                        className="w-full cursor-pointer rounded-sm px-3 py-3 text-left hover:bg-sky focus:bg-sky focus:outline-none"
+                      >
+                        <span className="block font-medium">
+                          {suggestion.name}
+                        </span>
+                        <span className="block text-xs text-ink/60">
+                          {suggestion.address}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
           <div className="flex items-center justify-between gap-3">
             <label className="items-center gap-2 text-sm hidden">
@@ -192,7 +221,6 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
                 type="checkbox"
                 checked={openOnly}
                 onChange={(e) => {
-                  setIsLoading(true);
                   setOpenOnly(e.target.checked);
                 }}
               />{" "}
@@ -284,6 +312,7 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
               defaultCenter={CENTERS[country]}
               defaultZoom={11}
               gestureHandling="greedy"
+              keyboardShortcuts={false}
               disableDefaultUI
             >
               <PanTo target={center} zoom={active ? 15 : undefined} />
@@ -310,8 +339,7 @@ export default function LocatorMap({ country }: { country: "us" | "ca" }) {
           </APIProvider>
         ) : (
           <div className="flex h-full items-center p-8 text-sm">
-            Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to .env.local to show the map.
-            The list still works without it.
+            Add GOOGLE_MAPS_API_KEY to show the map.
           </div>
         )}
       </div>
