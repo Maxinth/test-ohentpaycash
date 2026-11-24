@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import clsx from "clsx";
 import {
   Form,
   FormControl,
@@ -203,7 +204,14 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Partnership">Partnership</SelectItem>
+                  <SelectItem
+                    value="Partnership"
+                    className={clsx(
+                      variant === "agent" && " cursor-not-allowed opacity-50",
+                    )}
+                  >
+                    Partnership
+                  </SelectItem>
                   {variant === "contact" && (
                     <>
                       <SelectItem value="Sales">Sales</SelectItem>
@@ -225,7 +233,12 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
             <FormItem>
               <FormLabel>Message</FormLabel>
               <FormControl>
-                <Textarea rows={5} placeholder="How can we help?" {...field} />
+                <Textarea
+                  rows={5}
+                  className="resize-none"
+                  placeholder="How can we help?"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

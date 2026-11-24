@@ -12,7 +12,7 @@ const Logo = ({ type }: Props) => {
       )}
     >
       <Image
-        src={type === "header" ? "/inverted_logo.svg" : "logo_original.svg"}
+        src={type === "header" ? "/inverted_logo.svg" : "/logo_original.svg"}
         alt="ohentpaycash logo"
         width={40}
         height={40}
