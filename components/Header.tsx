@@ -6,6 +6,7 @@ import { Suspense, useEffect, useState } from "react";
 import CountrySwitcher from "./CountrySwitcher";
 import { defaultLocale, locales } from "@/lib/i18n";
 import Image from "next/image";
+import Logo from "./Logo";
 
 const links = [
   { path: "/#how-it-works", label: "How it works" },
@@ -145,8 +146,8 @@ function HeaderContent() {
       <div
         className={`border-b border-line transition-all duration-300 ${
           scrolled
-            ? "bg-white/90 shadow-[0_6px_20px_-12px_rgba(10,37,64,.5)] backdrop-blur"
-            : "bg-paper"
+            ? "bg-white shadow-[0_6px_20px_-12px_rgba(10,37,64,.5)] backdrop-blur"
+            : "bg-white"
         }`}
       >
         <div
@@ -154,16 +155,8 @@ function HeaderContent() {
             scrolled ? "py-2.5" : "py-4"
           }`}
         >
-          <Link
-            href={`/${locale}`}
-            className="font-display text-xl font-bold tracking-tight"
-          >
-            <Image
-              src="/ohentlogo.png"
-              alt="ohentpaycash logo"
-              width={140}
-              height={100}
-            />
+          <Link href={`/${locale}`}>
+            <Logo type="header" />
           </Link>
 
           <nav

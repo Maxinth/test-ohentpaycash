@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "./Logo";
 
 export default function Footer({ locale }: { locale: string }) {
   const cols = [
@@ -22,9 +23,10 @@ export default function Footer({ locale }: { locale: string }) {
     <footer className="mt-24 bg-ink text-sky">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <p className="font-display text-2xl font-bold text-white">
-            OhentPayCash
-          </p>
+          <Link href={`/${locale}`}>
+            <Logo type="footer" />
+          </Link>
+
           <p className="mt-2 max-w-xs text-sm text-sky/80">
             Bring your cash online. Available in the United States and Canada.
           </p>
