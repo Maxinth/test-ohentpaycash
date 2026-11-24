@@ -48,7 +48,7 @@ export default function CountrySwitcher() {
         onClick={() => setOpen(!open)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center cursor-pointer gap-2 rounded-full border border-line bg-white px-3.5 py-1.5 text-sm font-medium transition-colors hover:border-ink"
+        className="flex items-center cursor-pointer gap-2 rounded-full border border-line bg-white px-3.5 py-1.5 text-sm font-medium transition-colors hover:border-blue-300"
       >
         <svg
           width="16"
