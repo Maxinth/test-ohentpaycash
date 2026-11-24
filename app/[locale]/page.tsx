@@ -105,7 +105,7 @@ export default async function Home({
         <ul className="mt-10 grid gap-10 md:grid-cols-3">
           {reasons.map((r) => (
             <li key={r.title} className="group">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-ink text-sky transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-900 text-sky transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
                 <svg
                   width="26"
                   height="26"
@@ -139,11 +139,13 @@ export default async function Home({
       </section>
 
       <section className="mx-auto max-w-6xl px-5 pt-20">
-        <h2 className="text-3xl font-bold md:text-4xl">Where you can use it</h2>
-        <Logos
+        <h2 className="text-3xl font-bold md:text-4xl text-center">
+          Where you can use it
+        </h2>
+        {/* <Logos
           title="Accepted at these online shops and services"
           label="Partner logo"
-        />
+        /> */}
         <Logos title="Pay at these payment points" label="Retailer logo" />
       </section>
 

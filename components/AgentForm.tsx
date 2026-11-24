@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import axiosInstance from "@/lib/axiosInstance";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -72,12 +73,8 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
             : "CASH_PARTNERS";
 
       const payload = { ...data, department };
-      const res = await fetch("/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      setStatus(res.ok ? "sent" : "error");
+      const res = await axiosInstance.post("/contact", payload);
+      setStatus(res.status === 200 || res.status === 201 ? "sent" : "error");
     } catch {
       setStatus("error");
     }

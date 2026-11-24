@@ -8,7 +8,7 @@ export function proxy(req: NextRequest) {
   if (pathname === "/agent" || pathname === "/agents") {
     const url = req.nextUrl.clone();
     url.pathname = "/contact-us";
-    url.search = "become-an-agent";
+    url.search = "become-a-partner";
     return NextResponse.redirect(url);
   }
 

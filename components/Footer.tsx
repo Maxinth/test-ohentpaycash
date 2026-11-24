@@ -6,7 +6,7 @@ export default function Footer({ locale }: { locale: string }) {
       title: "Company",
       links: [
         ["How it works", `/${locale}#how-it-works`],
-        ["Become an agent", "/contact-us?become-an-agent"],
+        ["Become an partner", "/contact-us?become-a-partner"],
         ["Contact", "/contact-us"],
       ],
     },

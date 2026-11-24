@@ -11,7 +11,7 @@ const links = [
   { path: "/#how-it-works", label: "How it works" },
   { path: "/locator", label: "Payment points" },
   { path: "/#faq", label: "FAQ" },
-  { path: "/contact-us?become-an-agent", label: "Become an agent" },
+  { path: "/contact-us?become-a-partner", label: "Become a partner" },
   { path: "/contact-us", label: "Contact" },
 ];
 
@@ -24,7 +24,7 @@ function HeaderContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isBecomeAnAgent =
-    searchParams.has("become-an-agent") && pathname === "/contact-us";
+    searchParams.has("become-a-partner") && pathname === "/contact-us";
 
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -95,7 +95,7 @@ function HeaderContent() {
     }
 
     // Normal page links
-    if (path === "/contact-us?become-an-agent") {
+    if (path === "/contact-us?become-a-partner") {
       return pathname === "/contact-us" && isBecomeAnAgent;
     }
 
@@ -131,8 +131,11 @@ function HeaderContent() {
         }`}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
-          <Link href="/contact-us?become-an-agent" className="hover:underline">
-            Run a shop? Become an agent
+          <Link
+            href="/contact-us?become-a-partner"
+            className="hover:font-medium underline duration-200 ease-in-out"
+          >
+            Run a shop? <span className="mx-1">Become a partner</span>
           </Link>
 
           <span>Available in the US and Canada</span>

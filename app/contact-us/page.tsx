@@ -25,12 +25,12 @@ const perks = [
 
 function ContactUsContent() {
   const searchParams = useSearchParams();
-  const isBecomeAnAgent = searchParams.has("become-an-agent");
+  const isBecomeAPartner = searchParams.has("become-a-partner");
 
   return (
     <div className="mx-auto grid max-w-6xl gap-14 px-5 pt-14 md:grid-cols-[1.1fr_.9fr] md:pt-20">
       <div>
-        {isBecomeAnAgent ? (
+        {isBecomeAPartner ? (
           <>
             <h1 className="text-5xl font-bold leading-[1.05] md:text-6xl">
               Turn your counter into a payment point.
@@ -77,11 +77,11 @@ function ContactUsContent() {
       </div>
       <div className="md:sticky md:top-6 md:self-start">
         <AgentForm
-          key={isBecomeAnAgent ? "agent" : "contact"}
-          variant={isBecomeAnAgent ? "agent" : "contact"}
+          key={isBecomeAPartner ? "agent" : "contact"}
+          variant={isBecomeAPartner ? "agent" : "contact"}
           headingText={
-            isBecomeAnAgent
-              ? "Apply to become an agent"
+            isBecomeAPartner
+              ? "Apply to become a partner"
               : "Get in touch with us"
           }
         />
