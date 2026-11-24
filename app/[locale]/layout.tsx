@@ -28,6 +28,31 @@ export async function generateMetadata({
       canonical: `/${locale}`,
       languages: Object.fromEntries(locales.map((l) => [l.code, `/${l.code}`])),
     },
+    openGraph: {
+      type: "website",
+      siteName: "OhentPayCash",
+      description: `OhentPayCash: pay online with cash`,
+      images: [{ url: "https://ohentpaycash.com/ohentpaycash.png" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "OhentPayCash",
+      description: "OhentPayCash: pay online with cash",
+      site: "@ohentpaycash",
+      creator: "@ohentpaycash",
+      creatorId: "1467726470533754880",
+    },
+    itunes: {
+      appId: "app-id=1457423786",
+    },
+    appleWebApp: {
+      title: "OhentPayCash",
+    },
+    other: {
+      "msapplication-TileColor": "#2d89ef",
+      "theme-color": "#ffffff",
+      "fb:app_id": "1687933088140109",
+    },
   };
 }
 
