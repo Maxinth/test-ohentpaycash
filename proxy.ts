@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { locales, defaultLocale } from "@/lib/i18n";
 
-// Sends "/" and "/agents" etc. to a locale URL: saved choice, then IP country (on Vercel), then en-us.
+// Locale URLs are redirected automatically. Public root routes remain locale-independent.
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  if (pathname === "/agents") {
+    const url = req.nextUrl.clone();
+    url.pathname = "/agent";
+    return NextResponse.redirect(url);
+  }
+
+  if (pathname === "/agent" || pathname.startsWith("/agent/")) {
+    return NextResponse.next();
+  }
+
   if (
     locales.some(
       (l) => pathname === `/${l.code}` || pathname.startsWith(`/${l.code}/`),
@@ -11,6 +22,7 @@ export function proxy(req: NextRequest) {
   ) {
     return NextResponse.next();
   }
+
   const saved = req.cookies.get("NEXT_LOCALE")?.value;
   const ipCountry = req.headers.get("x-vercel-ip-country");
   const code =

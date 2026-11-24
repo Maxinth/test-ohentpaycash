@@ -1,0 +1,38 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@layer base {
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+  }
+  :focus-visible {
+    outline: 3px solid #f0b03a;
+    outline-offset: 2px;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@keyframes swap {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.swap {
+  animation: swap 0.35s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .swap {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+html {
+  scroll-behavior: smooth;
+}

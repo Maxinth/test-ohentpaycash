@@ -1,17 +1,18 @@
 "use client";
-"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
-import { locales } from "@/lib/i18n";
+import { defaultLocale, locales } from "@/lib/i18n";
+
 export default function CountrySwitcher() {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const { locale } = useParams<{ locale: string }>();
+  const { locale: routeLocale } = useParams<{ locale?: string }>();
+  const locale = routeLocale ?? defaultLocale;
   const current = locales.find((l) => l.code === locale) ?? locales[0];
 
   useEffect(() => {
@@ -39,7 +40,12 @@ export default function CountrySwitcher() {
     });
 
     setOpen(false);
-    router.push(pathname.replace(`/${locale}`, `/${code}`));
+
+    if (routeLocale) {
+      router.push(pathname.replace(`/${routeLocale}`, `/${code}`));
+    } else {
+      router.push(`/${code}`);
+    }
   }
 
   return (

@@ -4,29 +4,34 @@ import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import CountrySwitcher from "./CountrySwitcher";
-import { locales } from "@/lib/i18n";
+import { defaultLocale, locales } from "@/lib/i18n";
 import Image from "next/image";
 
 const links = [
   { path: "/#how-it-works", label: "How it works" },
   { path: "/locator", label: "Payment points" },
   { path: "/#faq", label: "FAQ" },
-  { path: "/agents", label: "Become an agent" },
+  { path: "/agent", label: "Become an agent" },
 ];
 
 const underline =
   "relative after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5 after:origin-left after:scale-x-0 after:bg-brand after:transition-transform after:duration-300 hover:after:scale-x-100 focus-visible:after:scale-x-100 hover:text-blue-800 hover:font-bold duration-300 ease-in-out";
 
 export default function Header() {
-  const { locale } = useParams<{ locale: string }>();
+  const { locale: routeLocale } = useParams<{ locale?: string }>();
+  const locale = routeLocale ?? defaultLocale;
   const pathname = usePathname();
 
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
-  const to = (path: string) =>
-    path.startsWith("/#") ? `/${locale}${path.slice(1)}` : `/${locale}${path}`;
+  const to = (path: string) => {
+    if (path === "/agent") return "/agent";
+    return path.startsWith("/#")
+      ? `/${locale}${path.slice(1)}`
+      : `/${locale}${path}`;
+  };
 
   // Track the section currently crossing the activation point.
 
@@ -86,6 +91,7 @@ export default function Header() {
     }
 
     // Normal page links
+    if (path === "/agent") return pathname === "/agent";
     return pathname === `/${locale}${path}`;
   };
 
@@ -114,7 +120,7 @@ export default function Header() {
         }`}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
-          <Link href={to("/agents")} className="hover:underline">
+          <Link href="/agent" className="hover:underline">
             Run a shop? Become an agent
           </Link>
 
@@ -232,7 +238,11 @@ export default function Header() {
               {locales.map((item) => (
                 <li key={item.code}>
                   <a
-                    href={`/${item.code}`}
+                    href={
+                      routeLocale
+                        ? pathname.replace(`/${routeLocale}`, `/${item.code}`)
+                        : `/${item.code}`
+                    }
                     onClick={() => {
                       document.cookie = `NEXT_LOCALE=${item.code}; path=/; max-age=31536000`;
                     }}
