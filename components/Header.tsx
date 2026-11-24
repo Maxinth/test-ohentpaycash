@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import CountrySwitcher from "./CountrySwitcher";
 import { defaultLocale, locales } from "@/lib/i18n";
 import Image from "next/image";
@@ -11,23 +11,27 @@ const links = [
   { path: "/#how-it-works", label: "How it works" },
   { path: "/locator", label: "Payment points" },
   { path: "/#faq", label: "FAQ" },
-  { path: "/agent", label: "Become an agent" },
+  { path: "/contact-us?become-an-agent", label: "Become an agent" },
+  { path: "/contact-us", label: "Contact" },
 ];
 
 const underline =
   "relative after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5 after:origin-left after:scale-x-0 after:bg-brand after:transition-transform after:duration-300 hover:after:scale-x-100 focus-visible:after:scale-x-100 hover:text-blue-800 hover:font-bold duration-300 ease-in-out";
 
-export default function Header() {
+function HeaderContent() {
   const { locale: routeLocale } = useParams<{ locale?: string }>();
   const locale = routeLocale ?? defaultLocale;
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isBecomeAnAgent =
+    searchParams.has("become-an-agent") && pathname === "/contact-us";
 
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const to = (path: string) => {
-    if (path === "/agent") return "/agent";
+    if (path.startsWith("/contact-us")) return path;
     return path.startsWith("/#")
       ? `/${locale}${path.slice(1)}`
       : `/${locale}${path}`;
@@ -91,7 +95,14 @@ export default function Header() {
     }
 
     // Normal page links
-    if (path === "/agent") return pathname === "/agent";
+    if (path === "/contact-us?become-an-agent") {
+      return pathname === "/contact-us" && isBecomeAnAgent;
+    }
+
+    if (path === "/contact-us") {
+      return pathname === "/contact-us" && !isBecomeAnAgent;
+    }
+
     return pathname === `/${locale}${path}`;
   };
 
@@ -113,14 +124,14 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40">
+    <>
       <div
         className={`overflow-hidden bg-ink text-xs text-sky transition-all duration-300 ${
           scrolled ? "max-h-0" : "max-h-10"
         }`}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
-          <Link href="/agent" className="hover:underline">
+          <Link href="/contact-us?become-an-agent" className="hover:underline">
             Run a shop? Become an agent
           </Link>
 
@@ -262,6 +273,16 @@ export default function Header() {
           </div>
         </nav>
       </div>
+    </>
+  );
+}
+
+export default function Header() {
+  return (
+    <header className="sticky top-0 z-40">
+      <Suspense fallback={null}>
+        <HeaderContent />
+      </Suspense>
     </header>
   );
 }

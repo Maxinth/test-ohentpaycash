@@ -5,9 +5,9 @@ export default function Footer({ locale }: { locale: string }) {
     {
       title: "Company",
       links: [
-        ["How it works", `/${locale}#how`],
-        ["Become an agent", "/agent"],
-        ["Contact", "mailto:hello@ohentpaycash.com"],
+        ["How it works", `/${locale}#how-it-works`],
+        ["Become an agent", "/contact-us?become-an-agent"],
+        ["Contact", "/contact-us"],
       ],
     },
     {

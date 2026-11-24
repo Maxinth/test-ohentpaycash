@@ -11,11 +11,11 @@ const display = Bricolage_Grotesque({
 const body = Instrument_Sans({ subsets: ["latin"], variable: "--font-body" });
 
 export const metadata: Metadata = {
-  title: "Become an agent | OhentPayCash",
-  description: "Become an OhentPayCash payment agent.",
+  title: "Contact us | OhentPayCash",
+  description: "Contact OhentPayCash or apply to become a payment agent.",
 };
 
-export default function AgentLayout({
+export default function ContactUsLayout({
   children,
 }: {
   children: React.ReactNode;

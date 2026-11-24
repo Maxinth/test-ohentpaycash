@@ -5,13 +5,14 @@ import { locales, defaultLocale } from "@/lib/i18n";
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (pathname === "/agents") {
+  if (pathname === "/agent" || pathname === "/agents") {
     const url = req.nextUrl.clone();
-    url.pathname = "/agent";
+    url.pathname = "/contact-us";
+    url.search = "become-an-agent";
     return NextResponse.redirect(url);
   }
 
-  if (pathname === "/agent" || pathname.startsWith("/agent/")) {
+  if (pathname === "/contact-us" || pathname.startsWith("/contact-us/")) {
     return NextResponse.next();
   }
 
