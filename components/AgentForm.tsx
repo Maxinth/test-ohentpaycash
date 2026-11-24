@@ -31,34 +31,6 @@ interface Props {
   variant?: "agent" | "contact";
 }
 
-const agentSchema = z.object({
-  name: z.string().trim().min(2, "Please add your full name."),
-  email: z
-    .string()
-    .trim()
-    .min(1, "Please add your email address.")
-    .email("That email address does not look quite right."),
-  business: z.string().trim().min(2, "Please add the name of your business."),
-  phone: z
-    .string()
-    .trim()
-    .min(7, "Please add a phone number with at least 7 digits.")
-    .regex(/^\+?[0-9 ()-]{7,20}$/, "Please use a valid phone number."),
-  area: z.string().trim().min(3, "Please tell us the shop address or area."),
-  type: z.enum([
-    "Retail shop",
-    "Pharmacy",
-    "POS / banking agent",
-    "Supermarket",
-    "Other",
-  ]),
-  message: z
-    .string()
-    .trim()
-    .max(1000, "Please keep the extra details under 1000 characters.")
-    .optional(),
-});
-
 const contactSchema = z.object({
   full_name: z.string().trim().min(2, "Please add your full name."),
   email: z
@@ -66,13 +38,7 @@ const contactSchema = z.object({
     .trim()
     .min(1, "Please add your email address.")
     .email("That email address does not look quite right."),
-  subject: z.enum([
-    "General Enquiry",
-    "Sales",
-    "Account Support",
-    "Marketing and Partnerships",
-    "Media and Public Relations",
-  ]),
+  subject: z.enum(["Partnership", "Sales", "General Enquiries"]),
   job_title: z.string().trim().optional(),
   business_name: z.string().trim().optional(),
   message: z
@@ -83,24 +49,12 @@ const contactSchema = z.object({
 
 export default function AgentForm({ headingText, variant = "agent" }: Props) {
   const [status, setStatus] = useState<Status>("idle");
-  const agentForm = useForm<z.infer<typeof agentSchema>>({
-    resolver: zodResolver(agentSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      business: "",
-      phone: "",
-      area: "",
-      type: "Retail shop",
-      message: "",
-    },
-  });
   const contactForm = useForm<z.infer<typeof contactSchema>>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
       full_name: "",
       email: "",
-      subject: "General Enquiry",
+      subject: "Partnership",
       job_title: "",
       business_name: "",
       message: "",
@@ -110,21 +64,15 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
   async function submit(data: Record<string, unknown>) {
     setStatus("sending");
     try {
-      const endpoint = variant === "agent" ? "/api/agents" : "/api/contact";
-      const payload =
-        variant === "contact"
-          ? {
-              ...data,
-              department:
-                data.subject === "Sales"
-                  ? "SALES"
-                  : data.subject === "Marketing and Partnerships" ||
-                      data.subject === "Media and Public Relations"
-                    ? "MARKETING"
-                    : "SUPPORT",
-            }
-          : data;
-      const res = await fetch(endpoint, {
+      const department =
+        data.subject === "Sales"
+          ? "CASH_SALES"
+          : data.subject === "General Enquiries"
+            ? "CASH_GENERAL"
+            : "CASH_PARTNERS";
+
+      const payload = { ...data, department };
+      const res = await fetch("/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -150,160 +98,28 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
     );
   }
 
-  if (variant === "contact") {
-    return (
-      <Form {...contactForm}>
-        <form
-          onSubmit={contactForm.handleSubmit((data) => submit(data))}
-          className="space-y-5 rounded-lg bg-white p-6 shadow-sm md:p-8"
-        >
-          <h2 className="text-2xl font-bold">
-            {headingText ?? "Get in touch with us"}
-          </h2>
-          <div className="grid gap-5 sm:grid-cols-2">
-            <FormField
-              control={contactForm.control}
-              name="full_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full name</FormLabel>
-                  <FormControl>
-                    <Input
-                      autoComplete="name"
-                      placeholder="Enter your name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={contactForm.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email address</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      autoComplete="email"
-                      placeholder="Enter your email"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="grid gap-5 sm:grid-cols-2">
-            <FormField
-              control={contactForm.control}
-              name="business_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      autoComplete="organization"
-                      placeholder="Enter your company name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={contactForm.control}
-              name="job_title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Title</FormLabel>
-                  <FormControl>
-                    <Input
-                      autoComplete="organization-title"
-                      placeholder="Enter your job title"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormField
-            control={contactForm.control}
-            name="subject"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Reason</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select reason" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="General Enquiry">
-                      General enquiry
-                    </SelectItem>
-                    <SelectItem value="Sales">Sales</SelectItem>
-                    <SelectItem value="Account Support">
-                      Account Support
-                    </SelectItem>
-                    <SelectItem value="Marketing and Partnerships">
-                      Marketing and partnerships
-                    </SelectItem>
-                    <SelectItem value="Media and Public Relations">
-                      Media and Public Relations
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={contactForm.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Message</FormLabel>
-                <FormControl>
-                  <Textarea
-                    rows={5}
-                    placeholder="How can we help?"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <SubmitButton status={status} label="Send message" />
-        </form>
-      </Form>
-    );
-  }
-
   return (
-    <Form {...agentForm}>
+    <Form {...contactForm}>
       <form
-        onSubmit={agentForm.handleSubmit((data) => submit(data))}
+        onSubmit={contactForm.handleSubmit((data) => submit(data))}
         className="space-y-5 rounded-lg bg-white p-6 shadow-sm md:p-8"
       >
         <h2 className="text-2xl font-bold">
-          {headingText ?? "Apply to become an agent"}
+          {headingText ??
+            (variant === "agent"
+              ? "Apply to become an agent"
+              : "Get in touch with us")}
         </h2>
+        {variant === "agent" && (
+          <p className="text-sm text-ink/70">
+            Tell us about your business and our partnerships team will follow
+            up.
+          </p>
+        )}
         <div className="grid gap-5 sm:grid-cols-2">
           <FormField
-            control={agentForm.control}
-            name="name"
+            control={contactForm.control}
+            name="full_name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Full name</FormLabel>
@@ -319,7 +135,7 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
             )}
           />
           <FormField
-            control={agentForm.control}
+            control={contactForm.control}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -336,16 +152,18 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
               </FormItem>
             )}
           />
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2">
           <FormField
-            control={agentForm.control}
-            name="business"
+            control={contactForm.control}
+            name="business_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Business name</FormLabel>
+                <FormLabel>Company name</FormLabel>
                 <FormControl>
                   <Input
                     autoComplete="organization"
-                    placeholder="Enter business name"
+                    placeholder="Enter your company name"
                     {...field}
                   />
                 </FormControl>
@@ -354,16 +172,15 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
             )}
           />
           <FormField
-            control={agentForm.control}
-            name="phone"
+            control={contactForm.control}
+            name="job_title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone number</FormLabel>
+                <FormLabel>Job title</FormLabel>
                 <FormControl>
                   <Input
-                    type="tel"
-                    autoComplete="tel"
-                    placeholder="e.g. +1 555 123 4567"
+                    autoComplete="organization-title"
+                    placeholder="Enter your job title"
                     {...field}
                   />
                 </FormControl>
@@ -373,38 +190,31 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
           />
         </div>
         <FormField
-          control={agentForm.control}
-          name="area"
+          control={contactForm.control}
+          name="subject"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Shop address or area</FormLabel>
-              <FormControl>
-                <Input placeholder="Street, city or postcode" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={agentForm.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Type of business</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormLabel>Reason</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={variant === "agent" ? "Partnership" : field.value}
+                disabled={variant === "agent"}
+              >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select business type" />
+                    <SelectValue placeholder="Select reason" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Retail shop">Retail shop</SelectItem>
-                  <SelectItem value="Pharmacy">Pharmacy</SelectItem>
-                  <SelectItem value="POS / banking agent">
-                    POS / banking agent
-                  </SelectItem>
-                  <SelectItem value="Supermarket">Supermarket</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                  <SelectItem value="Partnership">Partnership</SelectItem>
+                  {variant === "contact" && (
+                    <>
+                      <SelectItem value="Sales">Sales</SelectItem>
+                      <SelectItem value="General Enquiries">
+                        General enquiries
+                      </SelectItem>
+                    </>
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -412,26 +222,22 @@ export default function AgentForm({ headingText, variant = "agent" }: Props) {
           )}
         />
         <FormField
-          control={agentForm.control}
+          control={contactForm.control}
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                Anything else we should know?{" "}
-                <span className="text-ink/50">(optional)</span>
-              </FormLabel>
+              <FormLabel>Message</FormLabel>
               <FormControl>
-                <Textarea
-                  rows={4}
-                  placeholder="Tell us about your shop"
-                  {...field}
-                />
+                <Textarea rows={5} placeholder="How can we help?" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <SubmitButton status={status} label="Submit application" />
+        <SubmitButton
+          status={status}
+          label={variant === "agent" ? "Submit application" : "Send message"}
+        />
       </form>
     </Form>
   );
